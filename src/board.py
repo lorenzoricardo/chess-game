@@ -7,9 +7,25 @@ from move import Move
 class Board:
     def __init__(self):
         self.squares = [[0, 0, 0, 0, 0, 0, 0, 0] for col in range(COLS)]
+        self.last_move = None
         self._create()
         self._add_pieces('white')
         self._add_pieces('black')
+
+    def move(self, piece, move):
+        initial = move.initial
+        final = move.final
+
+        self.squares[initial.row][initial.col].piece = None
+        self.squares[final.row][final.col].piece = piece
+
+        piece.moved = True
+        piece.clear_moves()
+
+        self.last_move = move
+
+    def valid_move(self, piece, move):
+        return move in piece.moves
 
     def calc_moves(self, piece, row, col):
         """
@@ -186,7 +202,6 @@ class Board:
         # king
         for col in range(COLS):
             self.squares[row_other][4] = Square(row_other, 4, King(color))
-            self.squares[4][5] = Square(4, 5, King(color))
 
         # rook
         for col in range(COLS):
